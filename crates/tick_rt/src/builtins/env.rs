@@ -16,6 +16,7 @@ pub fn set_var() -> Ref<Native> {
         function: Box::new(|_, _, values| {
             let key = values.get(0).map(|v| v.to_string()).unwrap_or_default();
             if !key.is_empty() {
+                // Safety: setting variable is safe because of single-threaded runtime
                 unsafe {
                     std::env::set_var(
                         key,
