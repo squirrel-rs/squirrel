@@ -17,3 +17,25 @@ Nightly builds are available and can be run on **stable Rust**, giving you a cha
 ```tick
 println("Hello, world! 🌟");
 ```
+
+### ToDo
+- [ ] `os` library
+- [ ] `fs` library
+- [ ] `time` library
+- [ ] update `math` library
+- [ ] implement `random` in `math` library
+- [ ] `strings` library
+- [ ] `fmt` library
+- [ ] `convert` library
+- [ ] `reflect` library
+- [x] `env` library
+- [ ] `mem` library
+- [ ] `signal` library
+- [ ] `zip` library
+- [ ] `color` library
+- [ ] `ffi` library
+- [ ] `net/http` library
+- [ ] `net/tcp` library
+- [ ] `net/udp` library
+- [ ] `crypto` library
+- [ ] basic jit
