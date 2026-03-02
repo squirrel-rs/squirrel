@@ -3,7 +3,7 @@
 
 #### 💡 Quick Start
 ```tick
-println("Hello, world!")
+println("Hello, world!");
 ```
 
 #### ⚙️ Status
