@@ -196,7 +196,7 @@ impl<'io> Interpreter<'io> {
                 );
 
                 // Processing assignment
-                self.env.borrow_mut().define(span, name, value);
+                self.env.borrow_mut().set(span, name, value);
             }
         }
 
@@ -223,7 +223,7 @@ impl<'io> Interpreter<'io> {
                 // Matching container
                 match container {
                     // Module field assignment
-                    Value::Module(m) => m.borrow_mut().env.borrow_mut().force_define(name, value),
+                    Value::Module(m) => m.borrow_mut().env.borrow_mut().set(span, name, value),
                     // Instance field assignment
                     Value::Instance(i) => {
                         i.borrow_mut().fields.insert(name.to_string(), value);
@@ -267,7 +267,7 @@ impl<'io> Interpreter<'io> {
                 // Processing assignment
                 match container {
                     // Module field assignment
-                    Value::Module(m) => m.borrow_mut().env.borrow_mut().force_define(name, value),
+                    Value::Module(m) => m.borrow_mut().env.borrow_mut().set(span, name, value),
                     // Instance field assignment
                     Value::Instance(i) => {
                         i.borrow_mut().fields.insert(name.to_string(), value);
