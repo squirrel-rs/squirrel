@@ -1,3 +1,5 @@
+use rand::RngExt;
+
 /// Imports
 use crate::{
     builtins::utils,
@@ -49,10 +51,10 @@ fn to_string_method() -> Method {
                     match internal {
                         Value::Any(list) => match list.borrow_mut().downcast_mut::<Vec<Value>>() {
                             Some(vec) => Value::String(format!("{vec:?}")),
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -84,10 +86,10 @@ fn push_method() -> Method {
                                 vec.push(values.get(1).cloned().unwrap());
                                 Value::Null
                             }
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -130,10 +132,10 @@ fn get_method() -> Method {
                                 }
                                 _ => utils::error(span, "index should be an int"),
                             },
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -179,10 +181,10 @@ fn set_method() -> Method {
                                 };
                                 Value::Null
                             }
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -228,10 +230,10 @@ fn insert_method() -> Method {
                                 };
                                 Value::Null
                             }
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -277,10 +279,10 @@ fn remove_method() -> Method {
                                 };
                                 Value::Null
                             }
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -309,10 +311,10 @@ fn len_method() -> Method {
                     match internal {
                         Value::Any(list) => match list.borrow_mut().downcast_mut::<Vec<Value>>() {
                             Some(vec) => Value::Int(vec.len() as i64),
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -344,10 +346,10 @@ fn clear_method() -> Method {
                                 vec.clear();
                                 Value::Null
                             }
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -376,10 +378,10 @@ fn pop_method() -> Method {
                     match internal {
                         Value::Any(list) => match list.borrow_mut().downcast_mut::<Vec<Value>>() {
                             Some(vec) => vec.pop().unwrap_or(Value::Null),
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -414,10 +416,10 @@ fn index_of_method() -> Method {
                                     .map(|it| Value::Int(it as i64))
                                     .unwrap_or(Value::Int(-1))
                             }
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -446,10 +448,10 @@ fn contains_method() -> Method {
                     match internal {
                         Value::Any(list) => match list.borrow_mut().downcast_mut::<Vec<Value>>() {
                             Some(vec) => Value::Bool(vec.contains(values.get(1).unwrap())),
-                            _ => utils::error(span, "corrupted list."),
+                            _ => utils::error(span, "corrupted list"),
                         },
                         _ => {
-                            utils::error(span, "corrupted list.");
+                            utils::error(span, "corrupted list");
                         }
                     }
                 }
@@ -459,6 +461,43 @@ fn contains_method() -> Method {
     }))
 }
 
+/// Choice method
+fn choice_method() -> Method {
+    Method::Native(Ref::new(Native {
+        arity: 1,
+        function: Box::new(|_, span, values| {
+            let list = values.get(0).cloned().unwrap();
+            match list {
+                Value::Instance(instance) => {
+                    // Safety: borrow is temporal for this line
+                    let internal = instance
+                        .borrow_mut()
+                        .fields
+                        .get("$internal")
+                        .cloned()
+                        .unwrap();
+
+                    match internal {
+                        Value::Any(list) => match list.borrow_mut().downcast_mut::<Vec<Value>>() {
+                            Some(vec) => match vec.get(rand::rng().random_range(0..vec.len())) {
+                                Some(val) => val.clone(),
+                                _ => utils::error(
+                                    span,
+                                    "list must have 1 or more elements to perform random choice on it",
+                                ),
+                            },
+                            _ => utils::error(span, "corrupted list"),
+                        },
+                        _ => {
+                            utils::error(span, "corrupted list");
+                        }
+                    }
+                }
+                _ => unreachable!(),
+            }
+        }),
+    }))
+}
 /// Provides list type
 pub fn provide_type() -> Ref<Type> {
     Ref::new(Type {
@@ -488,6 +527,8 @@ pub fn provide_type() -> Ref<Type> {
             ("index_of".to_string(), index_of_method()),
             // Contains method
             ("contains".to_string(), contains_method()),
+            // Choice method
+            ("choice".to_string(), choice_method()),
         ]),
     })
 }
