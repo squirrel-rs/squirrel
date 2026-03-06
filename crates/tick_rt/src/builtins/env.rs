@@ -102,7 +102,7 @@ pub fn args() -> Ref<Native> {
                 .borrow()
                 .lookup("List")
                 .unwrap_or_else(|| error(span, "list builtin is not found"));
-            
+
             // Instantiating list instance
             match list_builtin {
                 Value::Type(list_ty) => match rt.call_type(span, Vec::new(), list_ty) {
@@ -121,9 +121,7 @@ pub fn args() -> Ref<Native> {
                         }
                         _ => bug!("`call_type` returned non-instance value"),
                     },
-                    Err(_) => {
-                        bug!("control flow leak");
-                    }
+                    Err(_) => bug!("control flow leak"),
                 },
                 _ => error(span, "list builtin is not a type"),
             }

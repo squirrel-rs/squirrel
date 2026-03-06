@@ -114,6 +114,16 @@ impl<'io> Interpreter<'io> {
 
     /// Loads builtin module
     pub fn load_builtin_module(&mut self, name: &str) -> Option<MutRef<Module>> {
-        self.builtins.modules.get(name).cloned()
+        // Retrieving builtin module
+        let module = self.builtins.modules.get(name).cloned();
+
+        // Registering module, if it found
+        match module {
+            Some(module) => {
+                self.modules.set(name.to_string(), module.clone());
+                Some(module)
+            }
+            None => None,
+        }
     }
 }

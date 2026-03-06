@@ -1,11 +1,10 @@
-use rand::RngExt;
-
 /// Imports
 use crate::{
     builtins::utils,
     refs::{MutRef, Ref},
     rt::value::{Method, Native, Type, Value},
 };
+use rand::RngExt;
 use std::{cell::RefCell, collections::HashMap};
 
 /// Init method
@@ -498,6 +497,7 @@ fn choice_method() -> Method {
         }),
     }))
 }
+
 /// Provides list type
 pub fn provide_type() -> Ref<Type> {
     Ref::new(Type {
