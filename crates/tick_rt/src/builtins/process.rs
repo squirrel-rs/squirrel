@@ -381,6 +381,7 @@ pub fn provide_env() -> EnvRef {
     env.force_define("sleep", Value::Callable(Callable::Native(sleep())));
     env.force_define("exit", Value::Callable(Callable::Native(exit())));
     env.force_define("spawn", Value::Callable(Callable::Native(spawn())));
+    env.force_define("pid", Value::Int(process::id() as i64));
     env.force_define("Process", Value::Type(provide_process_type()));
 
     Rc::new(RefCell::new(env))

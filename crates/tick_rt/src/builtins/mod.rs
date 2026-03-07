@@ -4,6 +4,7 @@ mod env;
 mod is;
 mod list;
 mod math;
+mod mem;
 mod mods;
 mod process;
 mod utils;
