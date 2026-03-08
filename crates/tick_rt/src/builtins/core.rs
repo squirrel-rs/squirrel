@@ -14,7 +14,7 @@ pub fn print() -> Ref<Native> {
     return Ref::new(Native {
         arity: 1,
         function: Box::new(|rt, _, values| {
-            rt.io.output(&format!("{}", values.get(0).unwrap()));
+            rt.io.output(&values.get(0).unwrap().to_string());
             rt.io.flush();
             Value::Null
         }),

@@ -326,7 +326,7 @@ fn process_write_method() -> Method {
                                 match &mut child.stdin {
                                     Some(stdin) => {
                                         match stdin.write_all(
-                                            format!("{}", values.get(1).cloned().unwrap())
+                                             values.get(1).unwrap().to_string()
                                                 .as_bytes(),
                                         ) {
                                             Ok(_) => {}

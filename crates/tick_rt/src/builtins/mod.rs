@@ -8,6 +8,7 @@ mod mem;
 mod mods;
 mod process;
 mod utils;
+mod crypto;
 
 /// Imports
 use crate::{
