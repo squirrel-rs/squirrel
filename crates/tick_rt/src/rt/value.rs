@@ -178,8 +178,10 @@ impl PartialEq for Value {
             (Self::String(a), Self::String(b)) => a == b,
             (Self::Callable(a), Self::Callable(b)) => a == b,
             (Self::Type(a), Self::Type(b)) => Rc::ptr_eq(a, b),
+            (Self::Enum(a), Self::Enum(b)) => Rc::ptr_eq(a, b),
             (Self::Module(a), Self::Module(b)) => Rc::ptr_eq(a, b),
             (Self::Instance(a), Self::Instance(b)) => Rc::ptr_eq(a, b),
+            (Self::Any(a), Self::Any(b)) => Rc::ptr_eq(a, b),
             _ => false,
         }
     }
