@@ -63,11 +63,11 @@ macro_rules! assert_eval {
         let result = match std::panic::catch_unwind(|| {
             $crate::assertion::prepare_miette();
             let mut io = $crate::io::TestIO {
-                buffer: String::new(),
+                buffer: std::cell::RefCell::new(String::new()),
             };
             let mut interpreter = squirrel_rt::interpreter::Interpreter::new(&mut io);
             let _ = interpreter.interpret_module("test.ql", $text);
-            format!("{:#?}", io.buffer)
+            format!("{:#?}", io.buffer.borrow())
         }) {
             Ok(result) => result,
             Err(err) => {

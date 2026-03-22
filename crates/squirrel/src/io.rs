@@ -20,7 +20,7 @@ impl IO for CliIO {
     }
 
     /// Output implementation
-    fn output(&mut self, text: &str) {
+    fn output(&self, text: &str) {
         print!("{text}");
     }
 

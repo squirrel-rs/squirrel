@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+
 /// Imports
 use camino::Utf8PathBuf;
 use squirrel_common::{
@@ -8,7 +10,7 @@ use squirrel_common::{
 /// Test IO implementation
 pub struct TestIO {
     // Buffer used for output handling
-    pub buffer: String,
+    pub buffer: RefCell<String>,
 }
 
 /// Implementation of Test IO
@@ -19,8 +21,8 @@ impl IO for TestIO {
     }
 
     /// Output implementation
-    fn output(&mut self, text: &str) {
-        self.buffer.push_str(text);
+    fn output(&self, text: &str) {
+        self.buffer.borrow_mut().push_str(text);
     }
 
     /// Read implementation

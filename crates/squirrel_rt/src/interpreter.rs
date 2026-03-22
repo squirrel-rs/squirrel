@@ -22,13 +22,13 @@ pub struct Interpreter<'io> {
     /// Modules registry
     pub(crate) modules: Modules,
     /// IO
-    pub(crate) io: &'io mut dyn IO,
+    pub(crate) io: &'io dyn IO,
 }
 
 /// Implementation
 impl<'io> Interpreter<'io> {
     /// Creates new interpreter
-    pub fn new(io: &'io mut dyn IO) -> Self {
+    pub fn new(io: &'io dyn IO) -> Self {
         Interpreter {
             builtins: builtins::provide_builtins(),
             env: EnvRef::new(RefCell::new(Environment::default())),

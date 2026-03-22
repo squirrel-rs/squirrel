@@ -31,7 +31,7 @@ pub trait IO {
     fn input(&self) -> String;
 
     /// Writes output
-    fn output(&mut self, text: &str);
+    fn output(&self, text: &str);
 
     /// Reads file
     fn read(&self, path: &Utf8PathBuf) -> String;

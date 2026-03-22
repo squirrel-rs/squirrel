@@ -22,7 +22,7 @@ impl IO for WasmIO {
     }
 
     // Output implementation
-    fn output(&mut self, text: &str) {
+    fn output(&self, text: &str) {
         js_print(text);
     }
 
