@@ -3,12 +3,12 @@ use cranelift::{
     codegen,
     prelude::{
         self, AbiParam, Configurable, FloatCC, FunctionBuilder, FunctionBuilderContext,
-        InstBuilder, IntCC, Value, settings, types,
+        InstBuilder, IntCC, settings, types,
     },
 };
 use cranelift_codegen::ir::FuncRef;
 use cranelift_jit::{JITBuilder, JITModule};
-use cranelift_module::{FuncId, Linkage, Module};
+use cranelift_module::{Linkage, Module};
 use squirrel_ast::{
     atom::{AssignOp, BinOp, Lit, UnaryOp},
     expr::Expression,
