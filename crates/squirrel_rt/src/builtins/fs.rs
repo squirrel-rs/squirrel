@@ -129,6 +129,21 @@ fn file_stem() -> Ref<Native> {
     })
 }
 
+/// Get file extension
+fn file_extension() -> Ref<Native> {
+    Ref::new(Native {
+        arity: 2,
+        function: Box::new(|_, span, values| {
+            validate_one_path_arg(span, &values, |path| {
+                Value::String(
+                    path.extension()
+                        .map(|it| it.to_string())
+                        .unwrap_or(String::new()),
+                )
+            })
+        }),
+    })
+}
 /// Make directory
 fn mk_dir() -> Ref<Native> {
     Ref::new(Native {
@@ -377,6 +392,10 @@ pub fn provide_env() -> EnvRef {
     env.force_define("is_file", Value::Callable(Callable::Native(is_file())));
     env.force_define("file_name", Value::Callable(Callable::Native(file_name())));
     env.force_define("file_stem", Value::Callable(Callable::Native(file_stem())));
+    env.force_define(
+        "file_extension",
+        Value::Callable(Callable::Native(file_extension())),
+    );
     env.force_define("mk_file", Value::Callable(Callable::Native(mk_file())));
     env.force_define("mk_dir", Value::Callable(Callable::Native(mk_dir())));
     env.force_define(
