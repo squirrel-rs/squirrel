@@ -1,5 +1,5 @@
 #[ A kitten ]#
-type Kitten {
+class Kitten {
     # Init called when a Kitten is born
     fn init(self, food) {
         # Kitten has age and food level

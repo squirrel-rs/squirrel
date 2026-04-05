@@ -6,10 +6,9 @@ use crate::{
     rt::{
         env::Environment,
         flow::{ControlFlow, Flow},
-        value::{Bound, Callable, Closure, Function, Instance, Method, Native, Type, Value},
+        value::{Bound, Callable, Class, Closure, Function, Instance, Method, Native, Value},
     },
 };
-use std::{cell::RefCell, collections::HashMap};
 use squirrel_ast::{
     atom::{BinOp, Lit, UnaryOp},
     expr::Expression,
@@ -17,6 +16,7 @@ use squirrel_ast::{
 };
 use squirrel_common::{bail, bug};
 use squirrel_lex::token::Span;
+use std::{cell::RefCell, collections::HashMap};
 
 /// Implementation
 impl<'io> Interpreter<'io> {
@@ -340,10 +340,11 @@ impl<'io> Interpreter<'io> {
     fn prepare_instance_fields(
         &self,
         instance: &MutRef<Instance>,
-        ty: Ref<Type>,
+        class: Ref<Class>,
     ) -> HashMap<String, Value> {
-        // Iterating over type methods
-        ty.methods
+        // Iterating over class methods
+        class
+            .methods
             .clone()
             .into_iter()
             .map(|it| {
@@ -360,16 +361,16 @@ impl<'io> Interpreter<'io> {
             .collect()
     }
 
-    /// Creates instance of the type
-    fn create_instance(&mut self, ty: Ref<Type>) -> MutRef<Instance> {
+    /// Creates instance of the class
+    fn create_instance(&mut self, class: Ref<Class>) -> MutRef<Instance> {
         // Creating instance
         let instance = MutRef::new(RefCell::new(Instance {
-            type_of: ty.clone(),
+            type_of: class.clone(),
             fields: HashMap::new(),
         }));
 
         // Preparing instance fields
-        let fields = self.prepare_instance_fields(&instance, ty);
+        let fields = self.prepare_instance_fields(&instance, class);
 
         // Setting new fields for instance
         instance.borrow_mut().fields = fields;
@@ -448,11 +449,11 @@ impl<'io> Interpreter<'io> {
     }
 
     /// Calls type and creates instance
-    pub(crate) fn call_type(
+    pub(crate) fn call_class(
         &mut self,
         span: &Span,
         args: Vec<Value>,
-        ty: Ref<Type>,
+        ty: Ref<Class>,
     ) -> Flow<Value> {
         // Creating instance
         let instance = self.create_instance(ty);
@@ -505,7 +506,7 @@ impl<'io> Interpreter<'io> {
                 Callable::Bound(bound) => self.call_bound_method(span, args, bound),
                 Callable::Native(native) => self.call_native(span, args, native),
             },
-            Value::Type(ty) => self.call_type(span, args, ty),
+            Value::Class(ty) => self.call_class(span, args, ty),
             _ => bail!(RuntimeError::CouldNotCall {
                 src: span.0.clone(),
                 span: span.1.clone().into(),
@@ -532,11 +533,11 @@ impl<'io> Interpreter<'io> {
                 .unwrap_or_else(|| bug!("no builtin `List` found"));
 
             match list_value {
-                Value::Type(t) => match self.call_type(span, Vec::new(), t)? {
+                Value::Class(t) => match self.call_class(span, Vec::new(), t)? {
                     Value::Instance(instance) => instance,
                     _ => unreachable!(),
                 },
-                _ => bug!("builtin `List` is not a type"),
+                _ => bug!("builtin `List` is not a class"),
             }
         };
 
@@ -585,11 +586,11 @@ impl<'io> Interpreter<'io> {
                 .unwrap_or_else(|| bug!("no builtin `List` found"));
 
             match list_value {
-                Value::Type(t) => match self.call_type(span, Vec::new(), t)? {
+                Value::Class(t) => match self.call_class(span, Vec::new(), t)? {
                     Value::Instance(instance) => instance,
                     _ => unreachable!(),
                 },
-                _ => bug!("builtin `List` is not a type"),
+                _ => bug!("builtin `List` is not a class"),
             }
         };
 

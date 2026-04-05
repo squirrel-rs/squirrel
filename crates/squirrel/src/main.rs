@@ -10,7 +10,7 @@ use squirrel_rt::interpreter::Interpreter;
 
 /// Arguments parser
 #[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
+#[command(version = concat!("🐿️  ", env!("CARGO_PKG_VERSION")), about, long_about = None)]
 struct Args {
     /// Path to the file
     path: Utf8PathBuf,

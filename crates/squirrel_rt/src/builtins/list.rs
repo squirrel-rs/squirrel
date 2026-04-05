@@ -2,7 +2,7 @@
 use crate::{
     builtins::utils,
     refs::{MutRef, Ref},
-    rt::value::{Method, Native, Type, Value},
+    rt::value::{Class, Method, Native, Value},
 };
 use rand::RngExt;
 use std::{cell::RefCell, collections::HashMap};
@@ -499,8 +499,8 @@ fn choice_method() -> Method {
 }
 
 /// Provides list type
-pub fn provide_type() -> Ref<Type> {
-    Ref::new(Type {
+pub fn provide_class() -> Ref<Class> {
+    Ref::new(Class {
         name: "List".to_string(),
         methods: HashMap::from([
             // Init method

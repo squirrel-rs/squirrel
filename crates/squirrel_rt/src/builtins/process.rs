@@ -4,9 +4,10 @@ use crate::{
     refs::{EnvRef, MutRef, Ref},
     rt::{
         env::Environment,
-        value::{Callable, Method, Native, Type, Value},
+        value::{Callable, Class, Method, Native, Value},
     },
 };
+use squirrel_common::bug;
 use std::{
     cell::RefCell,
     collections::HashMap,
@@ -16,7 +17,6 @@ use std::{
     thread,
     time::Duration,
 };
-use squirrel_common::bug;
 
 /// Thread sleep
 fn sleep() -> Ref<Native> {
@@ -100,21 +100,21 @@ fn spawn() -> Ref<Native> {
                 Err(err) => utils::error(span, &format!("failed to span process: {err}")),
             };
 
-            // Searching `Process` type
-            let process_ty = match rt.builtins.modules.get("process") {
+            // Searching `Process` class
+            let process_class = match rt.builtins.modules.get("process") {
                 // Safety: borrow is temporal for the end of function
                 Some(module) => match module.borrow().env.borrow().lookup("Process") {
-                    Some(Value::Type(ty)) => ty,
+                    Some(Value::Class(ty)) => ty,
                     _ => utils::error(span, "corrupted module"),
                 },
                 None => utils::error(span, "corrupted module"),
             };
 
             // Creating `Process` instance
-            match rt.call_type(
+            match rt.call_class(
                 span,
                 vec![Value::Any(MutRef::new(RefCell::new(child)))],
-                process_ty,
+                process_class,
             ) {
                 Ok(val) => val,
                 Err(_) => bug!("control flow leak"),
@@ -349,9 +349,9 @@ fn process_write_method() -> Method {
     }))
 }
 
-/// Provides `Process` type
-fn provide_process_type() -> Ref<Type> {
-    Ref::new(Type {
+/// Provides `Process` class
+fn provide_process_class() -> Ref<Class> {
+    Ref::new(Class {
         name: "Process".to_string(),
         methods: HashMap::from([
             // Init method
@@ -378,7 +378,7 @@ pub fn provide_env() -> EnvRef {
     env.force_define("exit", Value::Callable(Callable::Native(exit())));
     env.force_define("spawn", Value::Callable(Callable::Native(spawn())));
     env.force_define("pid", Value::Int(process::id() as i64));
-    env.force_define("Process", Value::Type(provide_process_type()));
+    env.force_define("Process", Value::Class(provide_process_class()));
 
     Rc::new(RefCell::new(env))
 }

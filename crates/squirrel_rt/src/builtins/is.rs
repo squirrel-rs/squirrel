@@ -61,12 +61,12 @@ fn callable() -> Ref<Native> {
     })
 }
 
-/// Is meta type
+/// Is meta class
 fn meta() -> Ref<Native> {
     Ref::new(Native {
         arity: 1,
         function: Box::new(|_, _, values| match values.first().unwrap() {
-            Value::Type(_) => Value::Bool(true),
+            Value::Class(_) => Value::Bool(true),
             _ => Value::Bool(false),
         }),
     })
@@ -100,7 +100,7 @@ fn type_of() -> Ref<Native> {
         arity: 2,
         function: Box::new(|_, _, values| match values.first().unwrap() {
             Value::Instance(instance) => match values.get(1).unwrap() {
-                Value::Type(ty) => Value::Bool(Rc::ptr_eq(&instance.borrow().type_of, ty)),
+                Value::Class(ty) => Value::Bool(Rc::ptr_eq(&instance.borrow().type_of, ty)),
                 _ => Value::Bool(false),
             },
             _ => Value::Bool(false),
@@ -111,7 +111,7 @@ fn type_of() -> Ref<Native> {
 /// Provides `is` module env
 pub fn provide_env() -> EnvRef {
     let mut env = Environment::default();
-    
+
     env.force_define("int", Value::Callable(Callable::Native(int())));
     env.force_define("float", Value::Callable(Callable::Native(float())));
     env.force_define("bool", Value::Callable(Callable::Native(bool())));
@@ -121,6 +121,6 @@ pub fn provide_env() -> EnvRef {
     env.force_define("module", Value::Callable(Callable::Native(module())));
     env.force_define("instance", Value::Callable(Callable::Native(instance())));
     env.force_define("type_of", Value::Callable(Callable::Native(type_of())));
-    
+
     Rc::new(RefCell::new(env))
 }

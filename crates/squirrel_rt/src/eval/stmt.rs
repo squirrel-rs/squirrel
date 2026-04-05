@@ -6,7 +6,7 @@ use crate::{
     rt::{
         env::Environment,
         flow::{ControlFlow, Flow},
-        value::{Callable, Closure, Enum, Function, Method, Trait, TraitFunction, Type, Value},
+        value::{Callable, Class, Closure, Enum, Function, Method, Trait, TraitFunction, Value},
     },
 };
 use squirrel_ast::{
@@ -69,8 +69,8 @@ impl<'io> Interpreter<'io> {
             })
         };
 
-        // Retrieving list type
-        let list_type = {
+        // Retrieving list class
+        let list_class = {
             let list_value = self
                 .builtins
                 .env
@@ -79,8 +79,8 @@ impl<'io> Interpreter<'io> {
                 .unwrap_or_else(|| bug!("no builtin `List` found"));
 
             match list_value {
-                Value::Type(t) => t,
-                _ => bug!("builtin `List` is not a type"),
+                Value::Class(t) => t,
+                _ => bug!("builtin `List` is not a class"),
             }
         };
 
@@ -88,8 +88,8 @@ impl<'io> Interpreter<'io> {
         let vec = match self.eval(iterable)? {
             // Matching list
             Value::Instance(instance) => {
-                // Checking types equality
-                if Rc::ptr_eq(&instance.borrow().type_of, &list_type) {
+                // Checking classes equality
+                if Rc::ptr_eq(&instance.borrow().type_of, &list_class) {
                     // Safety: borrow is temporal for this line
                     let internal = instance
                         .borrow_mut()
@@ -156,15 +156,15 @@ impl<'io> Interpreter<'io> {
         Ok(())
     }
 
-    /// Executes type statement
-    fn exec_type_decl(
+    /// Executes class statement
+    fn exec_class_decl(
         &mut self,
         name_span: &Span,
         name: &str,
         methods: &[atom::Function],
     ) -> Flow<()> {
-        // Creating type
-        let type_ref = Ref::new(Type {
+        // Creating class
+        let class_ref = Ref::new(Class {
             name: name.to_string(),
             methods: methods
                 .iter()
@@ -183,10 +183,10 @@ impl<'io> Interpreter<'io> {
                 .collect(),
         });
 
-        // Defining type in the environment
+        // Defining class in the environment
         self.env
             .borrow_mut()
-            .define(name_span, name, Value::Type(type_ref));
+            .define(name_span, name, Value::Class(class_ref));
 
         Ok(())
     }
@@ -520,12 +520,12 @@ impl<'io> Interpreter<'io> {
                 then,
                 else_,
             } => self.exec_if(span, condition, then, else_),
-            Statement::Type {
+            Statement::Class {
                 name_span,
                 name,
                 methods,
                 ..
-            } => self.exec_type_decl(name_span, name, methods),
+            } => self.exec_class_decl(name_span, name, methods),
             Statement::Enum {
                 span,
                 name,

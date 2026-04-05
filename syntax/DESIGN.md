@@ -10,7 +10,7 @@ This document describes syntax of the `Squirrel` programming language.
 | bool      | logical (bool) type: `true` or `false`                                    | `bool`                           |
 | string    | text data                                                                 | `String`                         |
 | callable  | represents reference to  any callable: function, native, bound, etc.      | `Rc<Function>`                   |
-| meta type | represents reference to the type.                                         | `Rc<Type>`                       |
+| class     | represents reference to the class.                                        | `Rc<Class>`                      |
 | enum      | represents reference to enumeration.                                      | `Rc<Enum>`                       |
 | instance  | represents reference to instance of the type.                             | `Rc<RefCell<Instance>>`          |
 | null      | represents null value or `nothing`.                                       | `()`                             |
@@ -68,8 +68,9 @@ Examples of the values:
 | bool      | true / false               |
 | string    | "text"                     |
 | function  | fn(x, y) {} return x + y } |
-| meta type | AnyDeclaredType            |
-| instance  | AnyDeclaredType()          |
+| class     | AnyDeclaredClass           |
+| enum      | AnyDeclaredEnum            |
+| instance  | AnyDeclaredClass()         |
 | null      | null                       |
 | native    | declared native            |
 | module    | module                     |

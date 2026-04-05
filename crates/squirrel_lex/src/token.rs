@@ -14,7 +14,7 @@ pub enum TokenKind {
     In,          // `in` keyword
     Let,         // `let` keyword
     Use,         // `use` keyword
-    Type,        // `type` keyword
+    Class,       // `class` keyword
     Enum,        // `enum` keyword
     If,          // `if` keyword
     Else,        // `else` keyword

@@ -60,8 +60,8 @@ impl Analyzer {
                 self.analyze_block(block);
                 self.stack.pop();
             }
-            // Analyzing type methods
-            Statement::Type { methods, .. } => {
+            // Analyzing class methods
+            Statement::Class { methods, .. } => {
                 for method in methods {
                     self.analyze_function(method);
                 }

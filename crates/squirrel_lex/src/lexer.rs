@@ -287,7 +287,7 @@ impl<'s> Lexer<'s> {
             "in" => TokenKind::In,
             "let" => TokenKind::Let,
             "use" => TokenKind::Use,
-            "type" => TokenKind::Type,
+            "class" => TokenKind::Class,
             "enum" => TokenKind::Enum,
             "if" => TokenKind::If,
             "else" => TokenKind::Else,

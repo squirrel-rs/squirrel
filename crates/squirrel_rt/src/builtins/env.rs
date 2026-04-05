@@ -8,8 +8,8 @@ use crate::{
         value::{Callable, Native, Value},
     },
 };
-use std::{cell::RefCell, rc::Rc};
 use squirrel_common::bug;
+use std::{cell::RefCell, rc::Rc};
 
 /// Set var definition
 pub fn set_var() -> Ref<Native> {
@@ -95,8 +95,8 @@ pub fn args() -> Ref<Native> {
     Ref::new(Native {
         arity: 0,
         function: Box::new(|rt, span, _| {
-            // Retrieving list type
-            let list_builtin = rt
+            // Retrieving list class
+            let list_class = rt
                 .builtins
                 .env
                 .borrow()
@@ -104,8 +104,8 @@ pub fn args() -> Ref<Native> {
                 .unwrap_or_else(|| error(span, "list builtin is not found"));
 
             // Instantiating list instance
-            match list_builtin {
-                Value::Type(list_ty) => match rt.call_type(span, Vec::new(), list_ty) {
+            match list_class {
+                Value::Class(list_ty) => match rt.call_class(span, Vec::new(), list_ty) {
                     Ok(val) => match val {
                         // Setting up internal vector
                         Value::Instance(list) => {
@@ -117,11 +117,11 @@ pub fn args() -> Ref<Native> {
                             );
                             Value::Instance(list)
                         }
-                        _ => bug!("`call_type` returned non-instance value"),
+                        _ => bug!("`call_class` returned non-instance value"),
                     },
                     Err(_) => bug!("control flow leak"),
                 },
-                _ => error(span, "list builtin is not a type"),
+                _ => error(span, "list builtin is not a class"),
             }
         }),
     })

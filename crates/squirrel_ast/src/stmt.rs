@@ -41,8 +41,8 @@ pub enum Statement {
         iterable: Expression,
         block: Block,
     },
-    // Type declaration
-    Type {
+    // Class declaration
+    Class {
         span: Span,
         name_span: Span,
         name: String,
@@ -118,7 +118,7 @@ impl Statement {
             Statement::While { .. }
             | Statement::If { .. }
             | Statement::For { .. }
-            | Statement::Type { .. }
+            | Statement::Class { .. }
             | Statement::Enum { .. }
             | Statement::Trait { .. }
             | Statement::Function(_)

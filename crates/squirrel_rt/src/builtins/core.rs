@@ -62,10 +62,10 @@ pub fn len_of() -> Ref<Native> {
             match values.first().cloned().unwrap() {
                 // If string, retrieving it's len
                 Value::String(str) => Value::Int(str.len() as i64),
-                // If instance, checking of which type this instance is
+                // If instance, checking of which class this instance is
                 Value::Instance(instance) => {
-                    // Retrieving list type
-                    let list_type = {
+                    // Retrieving list class
+                    let list_class = {
                         let list_value = rt
                             .builtins
                             .env
@@ -74,13 +74,13 @@ pub fn len_of() -> Ref<Native> {
                             .unwrap_or_else(|| bug!("no builtin `List` found"));
 
                         match list_value {
-                            Value::Type(t) => t,
-                            _ => bug!("builtin `List` is not a type"),
+                            Value::Class(t) => t,
+                            _ => bug!("builtin `List` is not a class"),
                         }
                     };
 
                     // Checking instance is list
-                    if Rc::ptr_eq(&instance.borrow_mut().type_of, &list_type) {
+                    if Rc::ptr_eq(&instance.borrow_mut().type_of, &list_class) {
                         // If instance is list, retrieving len of it's internal vector
                         // Safety: borrow is temporal for this line
                         let internal = instance
@@ -122,7 +122,7 @@ pub fn provide_env() -> EnvRef {
     env.force_define("readln", Value::Callable(Callable::Native(readln())));
     env.force_define("str_of", Value::Callable(Callable::Native(str_of())));
     env.force_define("len_of", Value::Callable(Callable::Native(len_of())));
-    env.force_define("List", Value::Type(list::provide_type()));
+    env.force_define("List", Value::Class(list::provide_class()));
 
     Rc::new(RefCell::new(env))
 }

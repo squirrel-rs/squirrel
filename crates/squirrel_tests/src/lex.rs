@@ -13,13 +13,13 @@ pub fn test_lex_1() {
 #[test]
 pub fn test_lex_2() {
     assert_tokens!(
-        "use as for while type fn in if else let return continue break",
+        "use as for while class fn in if else let return continue break",
         &[
             TokenKind::Use,
             TokenKind::As,
             TokenKind::For,
             TokenKind::While,
-            TokenKind::Type,
+            TokenKind::Class,
             TokenKind::Fn,
             TokenKind::In,
             TokenKind::If,

@@ -282,7 +282,7 @@ fn read_dir() -> Ref<Native> {
                         .unwrap_or_else(|| utils::error(span, "list builtin is not found"));
 
                     match list_builtin {
-                        Value::Type(list_ty) => match rt.call_type(span, Vec::new(), list_ty) {
+                        Value::Class(list_ty) => match rt.call_class(span, Vec::new(), list_ty) {
                             Ok(Value::Instance(list)) => {
                                 list.borrow_mut().fields.insert(
                                     "$internal".to_string(),
@@ -292,7 +292,7 @@ fn read_dir() -> Ref<Native> {
                             }
                             _ => bug!("invalid list instantiation"),
                         },
-                        _ => utils::error(span, "list builtin is not a type"),
+                        _ => utils::error(span, "list builtin is not a class"),
                     }
                 }
             })

@@ -4,7 +4,7 @@ trait Pet {
 }
 
 #[ Represents a Cat, meow :3 ]#
-type Cat {
+class Cat {
     # Cat has method `feed`
     fn feed(self, amount) {
         self.food = amount;
@@ -12,7 +12,7 @@ type Cat {
 }
 
 #[ Represents a Toad ]#
-type Toad {
+class Toad {
     # Toad doesn't have method `feed`, but `stroke`
     fn stroke(self) {
         println("Croak! Croak!");
@@ -26,5 +26,5 @@ if cat >: Pet {
 
 let toad = Toad();
 if toad >! Pet {
-    println("`Frog` doesn't impl `Pet`");
+    println("`Toad` doesn't impl `Pet`");
 }
