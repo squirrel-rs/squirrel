@@ -11,6 +11,7 @@ mod math;
 mod mem;
 mod mods;
 mod process;
+mod time;
 mod utils;
 
 /// Imports
