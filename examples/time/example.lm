@@ -1,0 +1,10 @@
+use time
+
+date := time.local()
+putln(date.format("%Y.%m.%d %H:%M:%S"))
+
+date := date.add_minutes(10)
+putln(date.format("%Y.%m.%d %H:%M:%S"))
+
+date := date.with_hour(10)
+putln(date.format("%Y.%m.%d %H:%M:%S"))
