@@ -12,9 +12,9 @@ println("Hello, world!");
 
 #### ✨ Examples
 ```loom
-fun main() {
-  putln("Hello, world!")
-}
+putln("What's your name?")
+name := readln()
+putln("Hello, " + name)
 ```
 
 ```loom
