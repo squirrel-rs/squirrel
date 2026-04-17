@@ -2,15 +2,15 @@
 use crate::{
     builtins::{self, Builtins},
     modules::Modules,
-    refs::{RealmRef, MutRef},
+    refs::{MutRef, RealmRef},
     rt::{realm::Realm, value::Module},
 };
-use miette::NamedSource;
-use geko_ir::stmt::Block;
 use geko_common::io::IO;
+use geko_ir::stmt::Block;
 use geko_lex::lexer::Lexer;
 use geko_parse::parser::Parser;
 use geko_sema::Analyzer;
+use miette::NamedSource;
 use std::{cell::RefCell, sync::Arc};
 
 /// Interpreter

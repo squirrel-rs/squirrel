@@ -1,13 +1,13 @@
 /// Imports
 use crate::{
-    atom::{AssignOp, Function, TraitFunction},
+    atom::{AssignOp, Class, Enum, Function, Trait},
     expr::Expression,
 };
 use geko_lex::token::Span;
 
 /// Usage
 #[derive(Debug, Clone)]
-pub enum UsageKind {
+pub enum UseKind {
     // As `name`
     As(String),
     // For `items`
@@ -42,24 +42,11 @@ pub enum Statement {
         block: Block,
     },
     // Class declaration
-    Class {
-        span: Span,
-        name_span: Span,
-        name: String,
-        methods: Vec<Function>,
-    },
+    Class(Class),
     // Enum declaration
-    Enum {
-        span: Span,
-        name: String,
-        variants: Vec<String>,
-    },
+    Enum(Enum),
     // Trait declaration
-    Trait {
-        span: Span,
-        name: String,
-        functions: Vec<TraitFunction>,
-    },
+    Trait(Trait),
     // Function declaration
     Function(Function),
     // Assignment declaration
@@ -94,7 +81,7 @@ pub enum Statement {
     Use {
         span: Span,
         path: String,
-        kind: UsageKind,
+        kind: UseKind,
     },
     // Bail statement
     Bail {

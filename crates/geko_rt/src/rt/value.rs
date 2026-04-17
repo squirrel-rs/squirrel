@@ -1,7 +1,7 @@
 /// Imports
 use crate::{
     interpreter::Interpreter,
-    refs::{RealmRef, MutRef, Ref},
+    refs::{MutRef, RealmRef, Ref},
 };
 use geko_ir::stmt::Block;
 use geko_lex::token::Span;

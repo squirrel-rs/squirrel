@@ -2,9 +2,9 @@
 use crate::errors::ParseError;
 use geko_common::bail;
 use geko_ir::{
-    atom::{AssignOp, BinOp, Function, Lit, TraitFunction, UnaryOp},
+    atom::{AssignOp, BinOp, Class, Enum, Function, Lit, Trait, TraitFunction, UnaryOp},
     expr::Expression,
-    stmt::{Block, Statement, UsageKind},
+    stmt::{Block, Statement, UseKind},
 };
 use geko_lex::{
     lexer::Lexer,
@@ -164,12 +164,12 @@ impl<'s> Parser<'s> {
 
         let end_span = self.prev().span.clone();
 
-        Statement::Class {
+        Statement::Class(Class {
             span: start_span + end_span,
             name_span,
             name: name.lexeme,
             methods,
-        }
+        })
     }
 
     /// Enum declaration parsing
@@ -179,6 +179,7 @@ impl<'s> Parser<'s> {
         // Parsing enum name
         self.expect(TokenKind::Enum);
         let name = self.expect(TokenKind::Id);
+        let name_span = start_span.clone() + name.span;
 
         // Parsing variants
         let variants = self.sep_by(
@@ -190,11 +191,12 @@ impl<'s> Parser<'s> {
 
         let end_span = self.prev().span.clone();
 
-        Statement::Enum {
+        Statement::Enum(Enum {
             span: start_span + end_span,
+            name_span,
             name: name.lexeme,
             variants,
-        }
+        })
     }
 
     /// Trait function parsing
@@ -232,11 +234,11 @@ impl<'s> Parser<'s> {
 
         let end_span = self.prev().span.clone();
 
-        Statement::Trait {
+        Statement::Trait(Trait {
             span: start_span + end_span,
             name,
             functions,
-        }
+        })
     }
 
     /// Assignment statement
@@ -325,28 +327,27 @@ impl<'s> Parser<'s> {
         }
     }
 
-    /// Use statement
-    fn use_stmt(&mut self) -> Statement {
-        let start_span = self.peek().span.clone();
-        self.expect(TokenKind::Use);
-
-        // Import path
+    /// Use path
+    fn use_path(&mut self) -> String {
         let mut path = String::new();
         path.push_str(&self.expect(TokenKind::Id).lexeme);
         while self.check(TokenKind::Slash) {
             self.bump();
             path.push_str(&self.expect(TokenKind::Id).lexeme);
         }
+        path
+    }
 
-        // Import kind
-        let kind = if self.check(TokenKind::As) {
+    /// Use kind
+    fn use_kind(&mut self) -> UseKind {
+        if self.check(TokenKind::As) {
             self.bump();
-            UsageKind::As(self.expect(TokenKind::Id).lexeme)
+            UseKind::As(self.expect(TokenKind::Id).lexeme)
         } else if self.check(TokenKind::For) {
             self.bump();
             if self.check(TokenKind::Star) {
                 self.bump();
-                UsageKind::All
+                UseKind::All
             } else {
                 let mut items = Vec::new();
                 items.push(self.expect(TokenKind::Id).lexeme);
@@ -354,11 +355,19 @@ impl<'s> Parser<'s> {
                     self.bump();
                     items.push(self.expect(TokenKind::Id).lexeme);
                 }
-                UsageKind::For(items)
+                UseKind::For(items)
             }
         } else {
-            UsageKind::Just
-        };
+            UseKind::Just
+        }
+    }
+
+    /// Use statement
+    fn use_stmt(&mut self) -> Statement {
+        let start_span = self.peek().span.clone();
+        self.expect(TokenKind::Use);
+        let path = self.use_path();
+        let kind = self.use_kind();
         let end_span = self.prev().span.clone();
 
         Statement::Use {

@@ -275,15 +275,8 @@ impl<'io> Interpreter<'io> {
         }
     }
 
-    /// Evaluates field expression
-    pub(crate) fn eval_field(
-        &mut self,
-        span: &Span,
-        name: &str,
-        container: &Expression,
-    ) -> Flow<Value> {
-        // Evaluating container
-        let container = self.eval(container)?;
+    /// Performs field access
+    pub(crate) fn access_field(span: &Span, name: &str, container: Value) -> Flow<Value> {
         // Matching container
         match container {
             // Module field access
@@ -320,6 +313,20 @@ impl<'io> Interpreter<'io> {
                 value
             }),
         }
+    }
+
+    /// Evaluates field expression
+    pub(crate) fn eval_field(
+        &mut self,
+        span: &Span,
+        name: &str,
+        container: &Expression,
+    ) -> Flow<Value> {
+        // Evaluating container
+        let container = self.eval(container)?;
+
+        // Accessing field
+        Self::access_field(span, name, container)
     }
 
     /// Checks params and arguments arity

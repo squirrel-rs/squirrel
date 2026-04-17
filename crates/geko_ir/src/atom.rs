@@ -100,24 +100,43 @@ pub enum Lit {
 /// Represents function
 #[derive(Debug, Clone)]
 pub struct Function {
-    /// Function spans
     pub span: Span,
     pub sign_span: Span,
-    /// Function name
     pub name: String,
-    /// Function parameters
     pub params: Vec<String>,
-    /// Function body
     pub block: Block,
 }
 
 /// Represents trait function
 #[derive(Debug, Clone)]
 pub struct TraitFunction {
-    /// Function span
     pub span: Span,
-    /// Function name
     pub name: String,
-    /// Function parameters
     pub params: Vec<String>,
+}
+
+/// Represents trait
+#[derive(Debug, Clone)]
+pub struct Trait {
+    pub span: Span,
+    pub name: String,
+    pub functions: Vec<TraitFunction>,
+}
+
+/// Represents class
+#[derive(Debug, Clone)]
+pub struct Class {
+    pub span: Span,
+    pub name_span: Span,
+    pub name: String,
+    pub methods: Vec<Function>,
+}
+
+/// Represents enum
+#[derive(Debug, Clone)]
+pub struct Enum {
+    pub span: Span,
+    pub name_span: Span,
+    pub name: String,
+    pub variants: Vec<String>,
 }

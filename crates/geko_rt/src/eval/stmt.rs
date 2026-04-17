@@ -13,7 +13,7 @@ use geko_common::{bail, bug};
 use geko_ir::{
     atom::{self, AssignOp, BinOp},
     expr::Expression,
-    stmt::{Block, Statement, UsageKind},
+    stmt::{Block, Statement, UseKind},
 };
 use geko_lex::token::Span;
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
@@ -157,11 +157,12 @@ impl<'io> Interpreter<'io> {
     }
 
     /// Executes class statement
-    fn exec_class_decl(&mut self, name: &str, methods: &[atom::Function]) -> Flow<()> {
+    fn exec_class_decl(&mut self, class: &atom::Class) -> Flow<()> {
         // Creating class
         let class_ref = Ref::new(Class {
-            name: name.to_string(),
-            methods: methods
+            name: class.name.to_string(),
+            methods: class
+                .methods
                 .iter()
                 .map(|method| {
                     (
@@ -181,31 +182,34 @@ impl<'io> Interpreter<'io> {
         // Defining class in the environment
         self.realm
             .borrow_mut()
-            .define(name, Value::Class(class_ref));
+            .define(&class.name, Value::Class(class_ref));
 
         Ok(())
     }
 
     /// Executes enum statement
-    fn exec_enum_decl(&mut self, name: &str, variants: &[String]) -> Flow<()> {
+    fn exec_enum_decl(&mut self, en: &atom::Enum) -> Flow<()> {
         // Creating enum
         let enum_ref = Ref::new(Enum {
-            name: name.to_string(),
-            variants: variants.to_owned(),
+            name: en.name.to_string(),
+            variants: en.variants.to_owned(),
         });
 
         // Defining enum in the environment
-        self.realm.borrow_mut().define(name, Value::Enum(enum_ref));
+        self.realm
+            .borrow_mut()
+            .define(&en.name, Value::Enum(enum_ref));
 
         Ok(())
     }
 
     /// Executes trait statement
-    fn exec_trait_decl(&mut self, name: &str, functions: &[atom::TraitFunction]) -> Flow<()> {
+    fn exec_trait_decl(&mut self, trt: &atom::Trait) -> Flow<()> {
         // Creating trait
         let trait_ref = Ref::new(Trait {
-            name: name.to_string(),
-            functions: functions
+            name: trt.name.to_string(),
+            functions: trt
+                .functions
                 .iter()
                 .map(|f| TraitFunction {
                     name: f.name.clone(),
@@ -217,7 +221,7 @@ impl<'io> Interpreter<'io> {
         // Defining enum in the environment
         self.realm
             .borrow_mut()
-            .define(name, Value::Trait(trait_ref));
+            .define(&trt.name, Value::Trait(trait_ref));
 
         Ok(())
     }
@@ -252,27 +256,19 @@ impl<'io> Interpreter<'io> {
         op: &AssignOp,
         value: &Expression,
     ) -> Flow<()> {
+        // Evaluating value
+        let value = self.eval(value)?;
+
+        // Matching operator
         match op {
-            AssignOp::Define => {
-                // Evaluating value
-                let value = self.eval(value)?;
-
-                // Processing definition
-                self.realm.borrow_mut().define(name, value);
-            }
-            AssignOp::Assign => {
-                // Evaluating value
-                let value = self.eval(value)?;
-
-                // Processing assignment
-                self.realm.borrow_mut().set(span, name, value);
-            }
+            // Processing field definition
+            AssignOp::Define => self.realm.borrow_mut().define(name, value),
+            // Processing field assignment
+            AssignOp::Assign => self.realm.borrow_mut().set(span, name, value),
+            // Otherwise, processing assignment with compound operation
             other => {
                 // Old variable value
                 let old = self.eval_variable(span, name)?;
-
-                // Evaluating value
-                let value = self.eval(value)?;
 
                 // Performing operation
                 let value = self.perform_bin_op(
@@ -301,6 +297,56 @@ impl<'io> Interpreter<'io> {
         Ok(())
     }
 
+    /// Defines field
+    fn define_field(span: &Span, container: Value, name: &str, value: Value) -> Flow<()> {
+        // Matching container
+        match container {
+            // Module field assignment
+            Value::Module(m) => m.borrow_mut().env.borrow_mut().define(name, value),
+            // Instance field assignment
+            Value::Instance(i) => {
+                i.borrow_mut().fields.insert(name.to_string(), value);
+            }
+            // Otherwise, raising error
+            value => bail!(RuntimeError::CouldNotResolveFields {
+                src: span.0.clone(),
+                span: span.1.clone().into(),
+                value
+            }),
+        }
+
+        Ok(())
+    }
+
+    /// Assigns field
+    fn assign_field(span: &Span, container: Value, name: &str, value: Value) -> Flow<()> {
+        // Matching container
+        match container {
+            // Module field assignment
+            Value::Module(m) => m.borrow_mut().env.borrow_mut().set(span, name, value),
+            // Instance field assignment
+            Value::Instance(i) if i.borrow().fields.contains_key(name) => {
+                i.borrow_mut().fields.insert(name.to_string(), value);
+            }
+            // Instance field assignment
+            Value::Instance(_) => {
+                bail!(RuntimeError::UndefinedField {
+                    name: name.to_string(),
+                    src: span.0.clone(),
+                    span: span.1.clone().into()
+                })
+            }
+            // Otherwise, raising error
+            value => bail!(RuntimeError::CouldNotResolveFields {
+                src: span.0.clone(),
+                span: span.1.clone().into(),
+                value
+            }),
+        }
+
+        Ok(())
+    }
+
     /// Executes field set
     fn exec_set(
         &mut self,
@@ -310,69 +356,21 @@ impl<'io> Interpreter<'io> {
         op: &AssignOp,
         value: &Expression,
     ) -> Flow<()> {
+        // Evaluating container
+        let container = self.eval(container)?;
+        // Evaluating value
+        let value = self.eval(value)?;
+
+        // Matching operator
         match op {
-            AssignOp::Define => {
-                // Evaluating container
-                let container = self.eval(container)?;
-
-                // Evaluating value
-                let value = self.eval(value)?;
-
-                // Matching container
-                match container {
-                    // Module field assignment
-                    Value::Module(m) => m.borrow_mut().env.borrow_mut().define(name, value),
-                    // Instance field assignment
-                    Value::Instance(i) => {
-                        i.borrow_mut().fields.insert(name.to_string(), value);
-                    }
-                    // Otherwise, raising error
-                    value => bail!(RuntimeError::CouldNotResolveFields {
-                        src: span.0.clone(),
-                        span: span.1.clone().into(),
-                        value
-                    }),
-                };
-            }
-            AssignOp::Assign => {
-                // Evaluating container
-                let container = self.eval(container)?;
-
-                // Evaluating value
-                let value = self.eval(value)?;
-
-                // Matching container
-                match container {
-                    // Module field assignment
-                    Value::Module(m) => m.borrow_mut().env.borrow_mut().set(span, name, value),
-                    // Instance field assignment
-                    Value::Instance(i) if i.borrow().fields.contains_key(name) => {
-                        i.borrow_mut().fields.insert(name.to_string(), value);
-                    }
-                    // Instance field assignment
-                    Value::Instance(_) => {
-                        bail!(RuntimeError::UndefinedField {
-                            name: name.to_string(),
-                            src: span.0.clone(),
-                            span: span.1.clone().into()
-                        })
-                    }
-                    // Otherwise, raising error
-                    value => bail!(RuntimeError::CouldNotResolveFields {
-                        src: span.0.clone(),
-                        span: span.1.clone().into(),
-                        value
-                    }),
-                };
-            }
+            // Processing field definition
+            AssignOp::Define => Self::define_field(span, container, name, value),
+            // Processing field assignment
+            AssignOp::Assign => Self::assign_field(span, container, name, value),
+            // Otherwise, processing assignment with compound operation
             other => {
                 // Old field value
-                let old = self.eval_field(span, name, container)?;
-                // Evaluating container
-                let container = self.eval(container)?;
-
-                // Evaluating value
-                let value = self.eval(value)?;
+                let old = Self::access_field(span, name, container.clone())?;
 
                 // Performing operation
                 let value = self.perform_bin_op(
@@ -394,24 +392,9 @@ impl<'io> Interpreter<'io> {
                 );
 
                 // Processing assignment
-                match container {
-                    // Module field assignment
-                    Value::Module(m) => m.borrow_mut().env.borrow_mut().set(span, name, value),
-                    // Instance field assignment
-                    Value::Instance(i) => {
-                        i.borrow_mut().fields.insert(name.to_string(), value);
-                    }
-                    // Otherwise, raising error
-                    value => bail!(RuntimeError::CouldNotResolveFields {
-                        src: span.0.clone(),
-                        span: span.1.clone().into(),
-                        value
-                    }),
-                };
+                Self::assign_field(span, container, name, value)
             }
         }
-
-        Ok(())
     }
 
     /// Executes return
@@ -436,7 +419,7 @@ impl<'io> Interpreter<'io> {
     }
 
     /// Executes use
-    fn exec_use(&mut self, span: &Span, name: &str, kind: &UsageKind) -> Flow<()> {
+    fn exec_use(&mut self, span: &Span, name: &str, kind: &UseKind) -> Flow<()> {
         // Resolving use path
         let module = {
             // Resolving fs path
@@ -455,8 +438,8 @@ impl<'io> Interpreter<'io> {
 
         // Checking usage kind
         match kind {
-            UsageKind::As(name) => self.realm.borrow_mut().define(name, Value::Module(module)),
-            UsageKind::For(items) => {
+            UseKind::As(name) => self.realm.borrow_mut().define(name, Value::Module(module)),
+            UseKind::For(items) => {
                 // Crawling items
                 let items: HashMap<String, Value> = {
                     let module = module.borrow();
@@ -483,7 +466,7 @@ impl<'io> Interpreter<'io> {
                     .into_iter()
                     .for_each(|(k, v)| self.realm.borrow_mut().define(&k, v));
             }
-            UsageKind::All => {
+            UseKind::All => {
                 // Crawling items
                 let items: HashMap<String, Value> = {
                     let module = module.borrow();
@@ -495,7 +478,7 @@ impl<'io> Interpreter<'io> {
                     .into_iter()
                     .for_each(|(k, v)| self.realm.borrow_mut().define(&k, v));
             }
-            UsageKind::Just => self
+            UseKind::Just => self
                 .realm
                 .borrow_mut()
                 // Safety: `split()` returns iterator with at least 1 element
@@ -530,11 +513,9 @@ impl<'io> Interpreter<'io> {
                 then,
                 else_,
             } => self.exec_if(span, condition, then, else_),
-            Statement::Class { name, methods, .. } => self.exec_class_decl(name, methods),
-            Statement::Enum { name, variants, .. } => self.exec_enum_decl(name, variants),
-            Statement::Trait {
-                name, functions, ..
-            } => self.exec_trait_decl(name, functions),
+            Statement::Class(class) => self.exec_class_decl(class),
+            Statement::Enum(en) => self.exec_enum_decl(en),
+            Statement::Trait(trt) => self.exec_trait_decl(trt),
             Statement::Function(function) => self.exec_function_decl(function),
             Statement::Assign {
                 span,
