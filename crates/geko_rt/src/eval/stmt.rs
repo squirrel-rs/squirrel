@@ -18,7 +18,7 @@ use geko_ir::{
 use geko_lex::token::Span;
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
-/// Implementation
+/// Statement execution implementation
 impl<'io> Interpreter<'io> {
     /// Executes while statement
     fn exec_while(&mut self, span: &Span, condition: &Expression, block: &Block) -> Flow<()> {

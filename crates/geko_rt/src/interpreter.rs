@@ -13,7 +13,7 @@ use geko_sema::Analyzer;
 use miette::NamedSource;
 use std::{cell::RefCell, sync::Arc};
 
-/// Interpreter
+/// The interpreting orchestra
 pub struct Interpreter<'io> {
     /// Builtins realm
     pub(crate) builtins: Builtins,
@@ -25,7 +25,7 @@ pub struct Interpreter<'io> {
     pub(crate) io: &'io dyn IO,
 }
 
-/// Implementation
+/// Base interpreter implementation
 impl<'io> Interpreter<'io> {
     /// Creates new interpreter
     pub fn new(io: &'io dyn IO) -> Self {

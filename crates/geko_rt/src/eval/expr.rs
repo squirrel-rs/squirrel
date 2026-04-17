@@ -18,7 +18,7 @@ use geko_ir::{
 use geko_lex::token::Span;
 use std::{cell::RefCell, collections::HashMap};
 
-/// Implementation
+/// Expression evaluation implementation
 impl<'io> Interpreter<'io> {
     /// Evaluates literal expression
     pub(crate) fn eval_lit(&self, lit: &Lit) -> Flow<Value> {
