@@ -1,8 +1,0 @@
-[package]
-name = "loom_ir"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-loom_common = { path = "../loom_common" }
-loom_lex = { path = "../loom_lex" }

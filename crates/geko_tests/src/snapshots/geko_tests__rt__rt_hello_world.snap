@@ -1,0 +1,5 @@
+---
+source: crates/geko_tests/src/rt.rs
+expression: result
+---
+"Hello, world!\n"

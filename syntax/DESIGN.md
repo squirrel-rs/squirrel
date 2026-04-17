@@ -1,6 +1,6 @@
 ## 🪭 Syntax examples
 
-This document describes syntax of the `Loom` programming language.
+This document describes syntax of the `Geko` programming language.
 
 ### 🎨 Data types
 | Data type | Description                                                               |   Rust representation            |
@@ -18,11 +18,11 @@ This document describes syntax of the `Loom` programming language.
 | any       | represents internal rusts `std::Any` variable                             | `Rc<RefCell<dyn std::any::Any>>` |
 
 ### Variable declaration
-`Loom` does not support variables shadowing, so here's
+`Geko` does not support variables shadowing, so here's
 a way to define variable and to reassign it.
 
 Variable definition:
-```loom
+```geko
 id := value
 ```
 
@@ -32,21 +32,21 @@ id = value
 ```
 
 ### Binary operations
-`Loom` supports following binary operations:
+`Geko` supports following binary operations:
 
-```loom
+```geko
 + - * / % && & || | ^ > < == != >: >!
 ```
 
 ### Unary operations
-`Loom` supports following unary operations:
+`Geko` supports following unary operations:
 
 ```
 - !
 ```
 
 ### Compound operators
-`Loom` supports following compound operators:
+`Geko` supports following compound operators:
 
 ```
 id += value
@@ -77,9 +77,9 @@ Examples of the values:
 | any       | any_native_value            |
 
 ### Functions example
-Here's an example on how you can define function in `Loom`:
+Here's an example on how you can define function in `Geko`:
 
-```loom
+```geko
 fun fib(x) {
   if x <= 1 {
     return x
@@ -89,9 +89,9 @@ fun fib(x) {
 }
 ```
 
-Loom supports closures:
+Geko supports closures:
 
-```loom
+```geko
 fun a() {
   x := 1
   fun b() {
@@ -108,9 +108,9 @@ b() # x = 5
 ```
 
 ### Classes or custom data types
-`Loom` supports custom data types. Here is example:
+`Geko` supports custom data types. Here is example:
 
-```loom
+```geko
 class Dog {
   fun init() {
     self.food := 3
@@ -128,7 +128,7 @@ b := dog.food
 ```
 
 ### Comments
-`Loom` comments examples:
+`Geko` comments examples:
 
 ```
 #[
@@ -144,7 +144,7 @@ brackets
 ```
 
 ### Usings
-`Loom` is modular:
+`Geko` is modular:
 
 ```
 use a # import `a` as `a`
@@ -154,7 +154,7 @@ use a for b, c # import multiple items
 ```
 
 ### Loops
-`Loom` loops examples:
+`Geko` loops examples:
 
 For loop with range examples.
 You can use any expression instead of numbers in range.
@@ -176,7 +176,7 @@ for i in 100..=0 {
 }
 ```
 
-While loop examples. You can see, that `Loom` supports `continue` and `break` keywords
+While loop examples. You can see, that `Geko` supports `continue` and `break` keywords
 ```
 i := 0
 while true {
@@ -194,7 +194,7 @@ while true {
 ### Logical statements
 If examples:
 
-```loom
+```geko
 use convert
 
 let a = readln()
@@ -210,14 +210,14 @@ if convert.int(a) > 5 {
 ### Errors raising
 Bail immediately breaks execution with error:
 
-```loom
+```geko
 bail "some text"
 ```
 
 ### Anonymous function
-`Loom` supports rust-like anonymous functions:
+`Geko` supports rust-like anonymous functions:
 
-```loom
+```geko
 a := || 1
 b := |a| a + 1
 c := |a| {
@@ -229,9 +229,9 @@ putln(c(2))
 ```
 
 ### Enumerations
-`Loom` supports enumerations. Every variant is just an int variable inside `Dog`.
+`Geko` supports enumerations. Every variant is just an int variable inside `Dog`.
 
-```loom
+```geko
 enum Dog {
   Poodle,  # 0
   Bulldog, # 1
@@ -245,10 +245,10 @@ putln(dog == Dog.Beagle) # false
 ```
 
 ### Traits
-`Loom` supports traits. Trait represents a behaviour description
+`Geko` supports traits. Trait represents a behaviour description
 that classes can implemenet.
 
-```loom
+```geko
 trait Pet {
   fun feed(self, amount)
 }

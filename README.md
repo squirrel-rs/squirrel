@@ -1,17 +1,17 @@
-#### 🧵 Loom
+#### 🦎 Geko
 ... is a friendly, lightweight programming language for math and games
 
 #### 💡 Status
-`Loom` is unstable, and currently a **work in progress project (WIP)**.  
+`Geko` is unstable, and currently a **work in progress project (WIP)**.  
 Nightly builds are available giving you a chance to explore and test the language as it evolves.
 
 #### 🏠 Quick Start
-```loom
+```geko
 println("Hello, world!");
 ```
 
 #### ✨ Examples
-```loom
+```geko
 fun greet(name) {
   greetings := [
     "Nice to meet you",
@@ -28,7 +28,7 @@ putln("👋 Hey there! What's your name?")
 greet(readln())
 ```
 
-```loom
+```geko
 class Sandwich {
   fun init(self, cheese, tomatoes) {
     self.cheese := cheese

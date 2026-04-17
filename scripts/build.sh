@@ -31,7 +31,7 @@ build_target() {
     cross build --release --target "$target"
 
     # Binary name
-    BIN_NAME="loom"
+    BIN_NAME="geko"
 
     # Destination folder by platform
     DEST_DIR="$OUTPUT_DIR/$target"

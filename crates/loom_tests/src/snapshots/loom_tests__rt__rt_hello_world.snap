@@ -1,5 +1,0 @@
----
-source: crates/loom_tests/src/rt.rs
-expression: result
----
-"Hello, world!\n"

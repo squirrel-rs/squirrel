@@ -533,6 +533,129 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
 
 [[package]]
+name = "geko"
+version = "0.1.0"
+dependencies = [
+ "camino",
+ "clap",
+ "geko_common",
+ "geko_rt",
+ "miette",
+]
+
+[[package]]
+name = "geko_common"
+version = "0.1.0"
+dependencies = [
+ "camino",
+ "miette",
+ "thiserror",
+]
+
+[[package]]
+name = "geko_ir"
+version = "0.1.0"
+dependencies = [
+ "geko_common",
+ "geko_lex",
+]
+
+[[package]]
+name = "geko_jit"
+version = "0.1.0"
+dependencies = [
+ "cranelift",
+ "cranelift-codegen",
+ "cranelift-jit",
+ "cranelift-module",
+ "cranelift-native",
+ "geko_common",
+ "geko_ir",
+ "geko_lex",
+ "libffi",
+]
+
+[[package]]
+name = "geko_lex"
+version = "0.1.0"
+dependencies = [
+ "camino",
+ "geko_common",
+ "miette",
+ "thiserror",
+]
+
+[[package]]
+name = "geko_parse"
+version = "0.1.0"
+dependencies = [
+ "geko_common",
+ "geko_ir",
+ "geko_lex",
+ "miette",
+ "thiserror",
+]
+
+[[package]]
+name = "geko_rt"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "camino",
+ "chrono",
+ "geko_common",
+ "geko_ir",
+ "geko_lex",
+ "geko_parse",
+ "geko_sema",
+ "hex",
+ "md-5",
+ "miette",
+ "rand",
+ "sha1",
+ "sha2",
+ "sysinfo",
+ "thiserror",
+]
+
+[[package]]
+name = "geko_sema"
+version = "0.1.0"
+dependencies = [
+ "geko_common",
+ "geko_ir",
+ "miette",
+ "thiserror",
+]
+
+[[package]]
+name = "geko_tests"
+version = "0.1.0"
+dependencies = [
+ "camino",
+ "geko_common",
+ "geko_ir",
+ "geko_lex",
+ "geko_parse",
+ "geko_rt",
+ "geko_sema",
+ "insta",
+ "miette",
+ "regex",
+]
+
+[[package]]
+name = "geko_wasm"
+version = "0.1.0"
+dependencies = [
+ "camino",
+ "geko_common",
+ "geko_rt",
+ "miette",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -723,129 +846,6 @@ name = "log"
 version = "0.4.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
-
-[[package]]
-name = "loom"
-version = "0.1.0"
-dependencies = [
- "camino",
- "clap",
- "loom_common",
- "loom_rt",
- "miette",
-]
-
-[[package]]
-name = "loom_common"
-version = "0.1.0"
-dependencies = [
- "camino",
- "miette",
- "thiserror",
-]
-
-[[package]]
-name = "loom_ir"
-version = "0.1.0"
-dependencies = [
- "loom_common",
- "loom_lex",
-]
-
-[[package]]
-name = "loom_jit"
-version = "0.1.0"
-dependencies = [
- "cranelift",
- "cranelift-codegen",
- "cranelift-jit",
- "cranelift-module",
- "cranelift-native",
- "libffi",
- "loom_common",
- "loom_ir",
- "loom_lex",
-]
-
-[[package]]
-name = "loom_lex"
-version = "0.1.0"
-dependencies = [
- "camino",
- "loom_common",
- "miette",
- "thiserror",
-]
-
-[[package]]
-name = "loom_parse"
-version = "0.1.0"
-dependencies = [
- "loom_common",
- "loom_ir",
- "loom_lex",
- "miette",
- "thiserror",
-]
-
-[[package]]
-name = "loom_rt"
-version = "0.1.0"
-dependencies = [
- "base64",
- "camino",
- "chrono",
- "hex",
- "loom_common",
- "loom_ir",
- "loom_lex",
- "loom_parse",
- "loom_sema",
- "md-5",
- "miette",
- "rand",
- "sha1",
- "sha2",
- "sysinfo",
- "thiserror",
-]
-
-[[package]]
-name = "loom_sema"
-version = "0.1.0"
-dependencies = [
- "loom_common",
- "loom_ir",
- "miette",
- "thiserror",
-]
-
-[[package]]
-name = "loom_tests"
-version = "0.1.0"
-dependencies = [
- "camino",
- "insta",
- "loom_common",
- "loom_ir",
- "loom_lex",
- "loom_parse",
- "loom_rt",
- "loom_sema",
- "miette",
- "regex",
-]
-
-[[package]]
-name = "loom_wasm"
-version = "0.1.0"
-dependencies = [
- "camino",
- "loom_common",
- "loom_rt",
- "miette",
- "wasm-bindgen",
-]
 
 [[package]]
 name = "mach2"

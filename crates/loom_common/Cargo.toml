@@ -1,9 +1,0 @@
-[package]
-name = "loom_common"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-miette = { version = "7.6.0", features = ["fancy"] }
-camino = "1.2.2"
-thiserror = "2.0.18"
