@@ -77,7 +77,7 @@ sandwich.cook()
 - [ ] use lasso for string interning
 - [ ] rework anonymous functions syntax
 - [ ] implement `shuffle` for list
-- [ ] `ok` and `error` builtins
+- [x] `ok` and `error` builtins
 - [ ] `todo` keyword
 - [x] implement anonymous functions
 - [x] extend for loop to iterate over items of list
