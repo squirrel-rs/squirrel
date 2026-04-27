@@ -1,6 +1,10 @@
 /// Imports
 use crate::{
-    builtins::{dict, list, utils},
+    builtins::{
+        dict, list,
+        result::{self, make_result},
+        utils,
+    },
     refs::{RealmRef, Ref},
     rt::{
         realm::Realm,
@@ -48,6 +52,28 @@ pub fn str_of() -> Ref<Native> {
         arity: 1,
         function: Box::new(|_, _, values| {
             Value::String(values.first().cloned().unwrap().to_string())
+        }),
+    })
+}
+
+/// Ok definition
+pub fn ok() -> Ref<Native> {
+    Ref::new(Native {
+        arity: 1,
+        function: Box::new(|rt, span, values| {
+            let value = values.get(0).cloned().unwrap();
+            Value::Instance(make_result(rt, span, value, true))
+        }),
+    })
+}
+
+/// Error definition
+pub fn error() -> Ref<Native> {
+    Ref::new(Native {
+        arity: 1,
+        function: Box::new(|rt, span, values| {
+            let value = values.get(0).cloned().unwrap();
+            Value::Instance(make_result(rt, span, value, false))
         }),
     })
 }
@@ -121,8 +147,11 @@ pub fn provide_env() -> RealmRef {
     realm.define("readln", Value::Callable(Callable::Native(readln())));
     realm.define("str_of", Value::Callable(Callable::Native(str_of())));
     realm.define("len_of", Value::Callable(Callable::Native(len_of())));
+    realm.define("ok", Value::Callable(Callable::Native(ok())));
+    realm.define("error", Value::Callable(Callable::Native(error())));
     realm.define("List", Value::Class(list::provide_class()));
     realm.define("Dict", Value::Class(dict::provide_class()));
+    realm.define("Result", Value::Class(result::provide_class()));
 
     Rc::new(RefCell::new(realm))
 }

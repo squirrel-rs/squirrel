@@ -1,0 +1,13 @@
+fun do_stuff(id) {
+  if id > 10 {
+    return ok("id > 10")
+  } else {
+    return error("id <= 10")
+  }
+}
+
+if do_stuff(12).is_ok() {
+  putln("everything is ok!")
+} else {
+  putln("id is too small!")
+}

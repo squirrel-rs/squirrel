@@ -11,12 +11,13 @@ mod math;
 mod mem;
 mod mods;
 mod process;
+mod result;
 mod time;
 mod utils;
 
 /// Imports
 use crate::{
-    refs::{RealmRef, MutRef},
+    refs::{MutRef, RealmRef},
     rt::value::Module,
 };
 use std::collections::HashMap;

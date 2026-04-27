@@ -1,6 +1,6 @@
 /// Imports
 use crate::{
-    builtins::utils,
+    builtins::{list::make_list, utils},
     interpreter::Interpreter,
     refs::{MutRef, Ref},
     rt::value::{Class, Instance, Method, Native, Value},
@@ -46,26 +46,27 @@ where
     validate_dict(span, values.first().cloned().unwrap(), f)
 }
 
-/// Helper: makes new list
-fn make_list(rt: &mut Interpreter, span: &Span) -> MutRef<Instance> {
-    let list_value = rt
+/// Helper: makes new dict
+#[allow(dead_code)]
+pub fn make_dict(rt: &mut Interpreter, span: &Span) -> MutRef<Instance> {
+    let dict_value = rt
         .builtins
         .env
         .borrow()
-        .lookup("List")
-        .unwrap_or_else(|| bug!("no builtin `List` found"));
+        .lookup("Dict")
+        .unwrap_or_else(|| bug!("no builtin `Dict` found"));
 
-    match list_value {
+    match dict_value {
         Value::Class(t) => match rt.call_class(span, Vec::new(), t) {
             Ok(Value::Instance(instance)) => instance,
             Ok(_) => unreachable!(),
             Err(err) => {
                 bug!(format!(
-                    "calling of builtin `List` has ended with a control flow leak: {err:?}"
+                    "calling of builtin `Dict` has ended with a control flow leak: {err:?}"
                 ))
             }
         },
-        _ => bug!("builtin `List` is not a class"),
+        _ => bug!("builtin `Dict` is not a class"),
     }
 }
 

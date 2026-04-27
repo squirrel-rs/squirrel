@@ -197,7 +197,7 @@ If examples:
 ```geko
 use convert
 
-let a = readln()
+a := readln()
 if convert.int(a) > 5 {
   ...
 } else if convert.int(a) < 5 {
@@ -256,24 +256,24 @@ trait Pet {
 class Cat {
   # Cat has method `feed`
   fun feed(self, amount) {
-      self.food = amount;
+    self.food = amount;
   }
 }
 
 class Toad {
   # Toad doesn't have method `feed`, but `stroke`
   fun stroke(self) {
-      println("Croak! Croak!");
+    println("Croak! Croak!");
   }
 }
 
-let cat = Cat();
+cat := Cat();
 if cat >: Pet {
-    println("`Cat` impls `Pet`");
+  println("`Cat` impls `Pet`");
 }
 
-let toad = Toad();
+toad := Toad();
 if toad >! Pet {
-    println("`Toad` doesn't impl `Pet`");
+  println("`Toad` doesn't impl `Pet`");
 }
 ```

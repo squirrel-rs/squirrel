@@ -482,6 +482,20 @@ impl<'io> Interpreter<'io> {
         Ok(Value::Instance(instance))
     }
 
+    /// Calls callable
+    pub(crate) fn call(
+        &mut self,
+        span: &Span,
+        args: Vec<Value>,
+        callable: Callable,
+    ) -> Flow<Value> {
+        match callable {
+            Callable::Closure(closure) => self.call_closure(span, args, closure),
+            Callable::Bound(bound) => self.call_bound_method(span, args, bound),
+            Callable::Native(native) => self.call_native(span, args, native),
+        }
+    }
+
     /// Calls bound method
     fn call_bound_method(
         &mut self,
@@ -508,11 +522,7 @@ impl<'io> Interpreter<'io> {
         let value = self.eval(what)?;
         match value {
             // Calling
-            Value::Callable(callable) => match callable {
-                Callable::Closure(closure) => self.call_closure(span, args, closure),
-                Callable::Bound(bound) => self.call_bound_method(span, args, bound),
-                Callable::Native(native) => self.call_native(span, args, native),
-            },
+            Value::Callable(callable) => self.call(span, args, callable),
             Value::Class(ty) => self.call_class(span, args, ty),
             _ => bail!(RuntimeError::CouldNotCall {
                 src: span.0.clone(),
@@ -597,6 +607,7 @@ impl<'io> Interpreter<'io> {
 
         Ok(Value::Instance(dict_value))
     }
+
     /// Evaluates range expression
     fn eval_range(
         &mut self,

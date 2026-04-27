@@ -1,11 +1,13 @@
 /// Imports
 use crate::{
     builtins::utils,
+    interpreter::Interpreter,
     refs::{MutRef, Ref},
-    rt::value::{Class, Method, Native, Value},
+    rt::value::{Class, Instance, Method, Native, Value},
 };
-use rand::RngExt;
+use geko_common::bug;
 use geko_lex::token::Span;
+use rand::RngExt;
 use std::{cell::RefCell, collections::HashMap};
 
 /// Helper: validates list
@@ -73,6 +75,29 @@ where
     F: FnOnce(usize) -> V,
 {
     validate_idx(span, values.get(idx).cloned().unwrap(), len, f)
+}
+
+/// Helper: makes new list
+pub fn make_list(rt: &mut Interpreter, span: &Span) -> MutRef<Instance> {
+    let list_value = rt
+        .builtins
+        .env
+        .borrow()
+        .lookup("List")
+        .unwrap_or_else(|| bug!("no builtin `List` found"));
+
+    match list_value {
+        Value::Class(t) => match rt.call_class(span, Vec::new(), t) {
+            Ok(Value::Instance(instance)) => instance,
+            Ok(_) => unreachable!(),
+            Err(err) => {
+                bug!(format!(
+                    "calling of builtin `List` has ended with a control flow leak: {err:?}"
+                ))
+            }
+        },
+        _ => bug!("builtin `List` is not a class"),
+    }
 }
 
 /// Init method
